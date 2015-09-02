@@ -1,0 +1,9 @@
+amqpUrl: "amqp://dhalfxhj:TJ-8jR4Z9ikYuFVy2mULh75CjnisKSmL@bunny.cloudamqp.com/dhalfxhj"
+
+server:
+  applicationConnectors:
+  - type: http 
+    port: 9000
+  adminConnectors:
+  - type: http
+    port: 9001
