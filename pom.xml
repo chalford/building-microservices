@@ -18,5 +18,10 @@
     <artifactId>amqp-client</artifactId>
     <version>3.5.4</version>
 </dependency>
-</dependencies>
+		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-core</artifactId>
+			<version>${dropwizard.version}</version>
+		</dependency>
+	</dependencies>
 </project>
