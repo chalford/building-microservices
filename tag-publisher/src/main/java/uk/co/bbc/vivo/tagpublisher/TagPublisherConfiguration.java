@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.dropwizard.Configuration;
 
-public class PosterConfiguration extends Configuration {
+public class TagPublisherConfiguration extends Configuration {
 	
 	@NotEmpty
 	private String amqpUrl;

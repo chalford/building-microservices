@@ -5,6 +5,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +24,11 @@ public class VivoClientResource {
 	@POST
 	@Timed
 	@Consumes(MediaType.TEXT_PLAIN)
-	public void postMessage(String message) {
+	public Response postMessage(String message) {
 		LOG.info("Message being posted: " + message);
 		LOG.info("Emitting Post event");
 		postDispatcher.emitPostEvent(message);
+		return Response.status(Response.Status.CREATED).build();
 	}
 
 }
