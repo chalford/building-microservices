@@ -1,4 +1,4 @@
-package uk.co.bbc.vivo.contentpublisher.persistance;
+package uk.co.bbc.vivo.contentpublisher.integration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

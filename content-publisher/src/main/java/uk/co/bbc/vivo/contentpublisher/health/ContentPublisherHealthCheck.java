@@ -2,7 +2,7 @@ package uk.co.bbc.vivo.contentpublisher.health;
 
 import com.codahale.metrics.health.HealthCheck;
 
-import uk.co.bbc.vivo.contentpublisher.persistance.ContentWriterOutboundGateway;
+import uk.co.bbc.vivo.contentpublisher.integration.ContentWriterOutboundGateway;
 
 public class ContentPublisherHealthCheck extends HealthCheck {
 

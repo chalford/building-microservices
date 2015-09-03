@@ -1,6 +1,5 @@
 package uk.co.bbc.vivo.contentpublisher.integration;
 
-import uk.co.bbc.vivo.contentpublisher.persistance.ContentWriterOutboundGateway;
 import java.util.UUID;
 
 import org.slf4j.Logger;
