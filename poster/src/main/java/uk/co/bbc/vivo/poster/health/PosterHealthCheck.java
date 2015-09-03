@@ -2,7 +2,7 @@ package uk.co.bbc.vivo.poster.health;
 
 import com.codahale.metrics.health.HealthCheck;
 
-import uk.co.bbc.vivo.poster.persistance.MongoDao;
+import uk.co.bbc.vivo.poster.core.MongoDao;
 
 public class PosterHealthCheck extends HealthCheck {
 

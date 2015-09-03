@@ -46,7 +46,7 @@ public class PublicationMessageManager implements Managed {
                     AMQP.BasicProperties properties, byte[] body) throws IOException {
 				String messageBody = new String(body, "UTF-8");
 				LOG.info("Received message: " + messageBody);
-				String type = properties.getHeaders().get("type").toString();
+				String type = properties.getType();
 				Event incomingEvent = new Event(type, messageBody, new Date());
 				eventHandler.routeEvent(incomingEvent);
 			}

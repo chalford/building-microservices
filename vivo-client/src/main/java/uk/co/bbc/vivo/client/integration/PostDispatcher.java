@@ -7,6 +7,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.AMQP.BasicProperties.Builder;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -55,7 +58,10 @@ public class PostDispatcher {
 		channel.queueBind(queueName, exchangeName, routingKey);
 		String helloVivo = "{'type': '" + postEvent.getType() + 
 				"','body': '" + postEvent.getBody() + "'}";
-		channel.basicPublish(exchangeName, routingKey, null, helloVivo.getBytes());
+		BasicProperties.Builder propBuilder = new BasicProperties.Builder();
+		propBuilder.type(postEvent.getType());
+		
+		channel.basicPublish(exchangeName, routingKey, propBuilder.build(), helloVivo.getBytes());
 	}
 
 }

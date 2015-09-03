@@ -24,22 +24,17 @@ public class PostManager implements Managed {
 	private final String amqpUrl;
 	private Connection connection;
 	private final Logger LOG = LoggerFactory.getLogger(PostManager.class);
-	
-	// Define an Exchange and a Queue on that channel
-	private String exchangeName = "training-microservices";
-	//  channel.exchangeDeclare(exchangeName, "direct", true)
-	private String queueName = "training-microservices-queue";
-	private String routingKey = "training-microservices-routing";
+	private EventHandler eventHandler;
 	
 	public PostManager(String amqpUrl) {
 		this.amqpUrl = amqpUrl;
 	}
 	
-	public boolean emitPostEvent(String message) {
-		Event postEvent = new Event("CreatePost", message, new Date());
+	public boolean emitPublishedEvent(String message) {
+		Event postEvent = new Event("PostCreated", message, new Date());
 		boolean postSucceeded = false;
 		try {
-			sendPostEvent(postEvent);
+			sendEvent(postEvent);
 			postSucceeded = true;
 		} catch (KeyManagementException e) {
 			// TODO Auto-generated catch block
@@ -60,28 +55,40 @@ public class PostManager implements Managed {
 		return postSucceeded;
 	}
 	
-	private void sendPostEvent(Event postEvent) throws KeyManagementException, NoSuchAlgorithmException, URISyntaxException, IOException, TimeoutException {
+	private void sendEvent(Event postEvent) throws KeyManagementException, NoSuchAlgorithmException, URISyntaxException, IOException, TimeoutException {
 		Channel channel = connection.createChannel();
-		channel.queueBind(queueName, exchangeName, routingKey);
+		String outgoingExchangeName = "building-microservices-published-topic";
+		String topicKey = "published";
+		channel.exchangeDeclare(outgoingExchangeName, "topic");
 		String helloVivo = "{'type': '" + postEvent.getType() + 
 				"','body': '" + postEvent.getBody() + "'}";
-		channel.basicPublish(exchangeName, routingKey, null, helloVivo.getBytes());
+		AMQP.BasicProperties.Builder propBuilder = new AMQP.BasicProperties.Builder();
+		propBuilder.type("PostCreated");
+		channel.basicPublish(outgoingExchangeName, topicKey, propBuilder.build(), helloVivo.getBytes());
 	}
 	
 	private void consumeClientQueue() throws IOException {
 		Channel channel = connection.createChannel();
-		channel.queueBind(queueName, exchangeName, routingKey);
+		String routingKey = "training-microservices-routing";
+		String incomingQueueName = "training-microservices-queue";
+		String incomingExchangeName = "training-microservices";
+		channel.queueBind(incomingQueueName, incomingExchangeName, routingKey);
 		
-		channel.basicConsume(queueName, true, new DefaultConsumer(channel) {
+		channel.basicConsume(incomingQueueName, true, new DefaultConsumer(channel) {
 			@Override
 			public void handleDelivery(String consumerTag, Envelope envelope,
                     AMQP.BasicProperties properties, byte[] body) throws IOException {
-				LOG.info("Received message: " + new String(body, "UTF-8"));
+				String messageBody = new String(body, "UTF-8");
+				LOG.info("Received (" + properties.getType()
+				+ ") message: " + messageBody);
+				Event incomingEvent = new Event(properties.getType(), messageBody, new Date());
+				eventHandler.routeEvent(incomingEvent);
 			}
 		});
 	}
 
 	public void start() throws Exception {
+		eventHandler = new EventHandler(this);
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setUri(amqpUrl);
 		connection = factory.newConnection();
